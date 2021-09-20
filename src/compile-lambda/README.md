@@ -2,11 +2,11 @@
 This is the lambda that compiles sketches using the Arduino CLI. It's in the form of a docker container.
 
 ## Building locally
-`docker run compile -it`
+`docker build -t compile .`
 
 ## Testing locally
 Run the container like so:
-`docker run -p 9000:8080  compile:latest`
+`docker run -e "AWS_ACCESS_KEY_ID=XXX" -e "AWS_SECRET_ACCESS_KEY=YYY" -p 9000:8080  compile:latest`
 
 Then push an event:
 `curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'`

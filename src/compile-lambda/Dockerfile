@@ -1,7 +1,7 @@
 FROM public.ecr.aws/lambda/nodejs:14
 
 # Copy lambda handler source
-COPY app.js package.json  /var/task/
+COPY app.js package.json package-lock.json /var/task/
 
 # Install NPM dependencies for function
 RUN npm install
@@ -11,6 +11,9 @@ RUN yum update -y
 RUN yum -y install tar
 RUN yum -y install gzip
 
+# Set HOME env var for Arduino CLI
+ENV HOME=/var/task
+
 # Install the Arduino CLI
 RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
 
@@ -18,14 +21,14 @@ RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/inst
 RUN $PWD/bin/arduino-cli config init
 
 # Add additional urls to board manager
-RUN $PWD/bin/arduino-cli config add board_manager.additional_urls http://arduino.esp8266.com/stable/package_esp8266com_index.json
+#RUN $PWD/bin/arduino-cli config add board_manager.additional_urls http://arduino.esp8266.com/stable/package_esp8266com_index.json
 
 # Update the Arduino CLI index
 RUN $PWD/bin/arduino-cli core update-index
 
 # Install the cores
 RUN $PWD/bin/arduino-cli core install arduino:avr
-RUN $PWD/bin/arduino-cli core install esp8266:esp8266
+#RUN $PWD/bin/arduino-cli core install esp8266:esp8266
 
 # Set the CMD to the handler 
 CMD [ "app.handler" ]  
