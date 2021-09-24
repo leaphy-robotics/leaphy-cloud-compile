@@ -4,7 +4,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as apigateway from "@aws-cdk/aws-apigateway";
 
-import { DockerImageCode, IFunction } from '@aws-cdk/aws-lambda';
+import { DockerImageCode } from '@aws-cdk/aws-lambda';
 import { Duration } from '@aws-cdk/aws-cloudwatch/node_modules/@aws-cdk/core';
 
 
