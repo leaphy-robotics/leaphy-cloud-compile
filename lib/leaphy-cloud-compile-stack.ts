@@ -25,13 +25,17 @@ export class LeaphyCloudCompileStack extends cdk.Stack {
     
     const api = new apigateway.RestApi(this, "compile-api", {
       restApiName: "Compile Service",
-      description: "This service compiles sketches."
+      description: "This service compiles sketches.",
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowMethods: [ 'POST' ]
+      }
     });
 
     const postCompileIntegration = new apigateway.LambdaIntegration(handler, {
-      requestTemplates: { "application/json": '{ "statusCode": "200" }' }
+      requestTemplates: { "application/json": '{ "statusCode": "200" }' }, 
     });
 
-    api.root.addMethod("GET", postCompileIntegration); // Should become POST
+    api.root.addMethod("POST", postCompileIntegration);
   }
 }

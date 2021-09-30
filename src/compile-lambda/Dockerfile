@@ -11,9 +11,15 @@ ENV HOME=/var/task
 # Install the Arduino CLI
 RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
 
+# TODO: Store config file in specific location 
+# The make sure all use that config file
+# Fix local test
+
 # Create arduino cli config
 RUN $PWD/bin/arduino-cli config init
-
+RUN $PWD/bin/arduino-cli config set directories.data /tmp/.arduino15
+RUN $PWD/bin/arduino-cli config set directories.downloads /tmp/.arduino15/staging
+RUN $PWD/bin/arduino-cli config set directories.user /tmp/Arduino
 # Add additional urls to board manager, not needed for now
 #RUN $PWD/bin/arduino-cli config add board_manager.additional_urls http://arduino.esp8266.com/stable/package_esp8266com_index.json
 
