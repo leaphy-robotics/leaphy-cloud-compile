@@ -21,15 +21,16 @@ exports.handler = async function (event, context) {
     const outPath = `${basePath}/out`;
     const hexPath = `${outPath}/sketch.ino.hex`;
 
-    //await fsPromises.mkdir(basePath, { recursive: true });
+    console.log(await fsPromises.readdir('/tmp'));
+
+    await fsPromises.mkdir(basePath, { recursive: true });
     await fsPromises.writeFile(sketchPath, sketch);
 
     console.log(await fsPromises.readdir('/tmp'));
     console.log(await fsPromises.readdir('/tmp/sketch'));
-    console.log(await fsPromises.readdir('/tmp/sketch/libraries'));
 
     try {
-        const { stdout, stderr } = await exec(`$PWD/bin/arduino-cli compile -b arduino:avr:uno --verbose --config-file /tmp/arduino-cli.yaml --build-path ${outPath} ${basePath}`);
+        const { stdout, stderr } = await exec(`$PWD/bin/arduino-cli compile -b arduino:avr:uno --verbose --config-file /var/task/arduino-cli.yaml --build-path ${outPath} ${basePath}`);
         console.log('stdout:', stdout);
         console.log('stderr:', stderr);
     }
