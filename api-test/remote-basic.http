@@ -1,6 +1,6 @@
-POST https://tprycoh346.execute-api.eu-west-1.amazonaws.com/prod/ HTTP/1.1
+POST https://c0lz7poj8g.execute-api.eu-west-1.amazonaws.com/ HTTP/1.1
 content-type: application/json
 
 {
-    "sketch": "void setup() {}\\n void loop() {}"
+    "sketch": "void setup() {}\n void loop() {}"
 }

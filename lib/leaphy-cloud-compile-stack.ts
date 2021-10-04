@@ -2,10 +2,12 @@ import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as apigateway from "@aws-cdk/aws-apigateway";
+
+import {CorsHttpMethod, HttpApi, HttpMethod} from '@aws-cdk/aws-apigatewayv2';
+import {LambdaProxyIntegration} from '@aws-cdk/aws-apigatewayv2-integrations';
 
 import { DockerImageCode } from '@aws-cdk/aws-lambda';
-import { Duration } from '@aws-cdk/aws-cloudwatch/node_modules/@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 
 
 export class LeaphyCloudCompileStack extends cdk.Stack {
@@ -22,20 +24,37 @@ export class LeaphyCloudCompileStack extends cdk.Stack {
     });
 
     bucket.grantReadWrite(handler);
+    bucket.grantPut(handler);
+    bucket.grantPutAcl(handler);
     
-    const api = new apigateway.RestApi(this, "compile-api", {
-      restApiName: "Compile Service",
+    const api = new HttpApi(this, "compile-api", {
+      apiName: "compile-service",
       description: "This service compiles sketches.",
-      defaultCorsPreflightOptions: {
-        allowOrigins: apigateway.Cors.ALL_ORIGINS,
-        allowMethods: [ 'POST' ]
+      corsPreflight: {
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+        ],
+        allowMethods: [
+          CorsHttpMethod.OPTIONS,
+          CorsHttpMethod.GET,
+          CorsHttpMethod.POST,
+          CorsHttpMethod.PUT,
+          CorsHttpMethod.PATCH,
+          CorsHttpMethod.DELETE,
+        ],
+        allowOrigins: ['*']
       }
     });
 
-    const postCompileIntegration = new apigateway.LambdaIntegration(handler, {
-      requestTemplates: { "application/json": '{ "statusCode": "200" }' }, 
-    });
-
-    api.root.addMethod("POST", postCompileIntegration);
+    api.addRoutes({
+      path: '/',
+      methods: [HttpMethod.POST],
+      integration: new LambdaProxyIntegration({
+        handler: handler
+      })
+    })
   }
 }
