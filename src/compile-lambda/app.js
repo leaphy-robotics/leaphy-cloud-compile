@@ -78,12 +78,6 @@ exports.handler = async function (event, context) {
     }
 
     const response = {
-        // 'headers': {
-        //     "Content-Type": "application/json",
-        //     "Access-Control-Allow-Origin": "*",
-        //     "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent",
-        //     "Access-Control-Allow-Methods": "OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD"
-        // },
         'statusCode': 200,
         'body': JSON.stringify({ binaryLocation: `https://${bucket}.s3.eu-west-1.amazonaws.com/${key}` })
     }

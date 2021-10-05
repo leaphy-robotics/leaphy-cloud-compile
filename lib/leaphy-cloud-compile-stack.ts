@@ -15,7 +15,14 @@ export class LeaphyCloudCompileStack extends cdk.Stack {
     super(scope, id, props);
 
     const bucket = new s3.Bucket(this, 'LeaphyCloudCompileWorkBucket', {
-      versioned: false
+      versioned: false,
+      cors: [
+        {
+          allowedMethods: [s3.HttpMethods.GET],
+          allowedOrigins: ["*"],
+          allowedHeaders: ["*"]
+        }
+      ]
     });
 
     const handler = new lambda.DockerImageFunction(this, 'CompileFunction', {
