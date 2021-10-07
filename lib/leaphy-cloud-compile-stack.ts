@@ -27,7 +27,8 @@ export class LeaphyCloudCompileStack extends cdk.Stack {
 
     const handler = new lambda.DockerImageFunction(this, 'CompileFunction', {
       code: DockerImageCode.fromImageAsset(path.join(__dirname, '..', 'src', 'compile-lambda')),
-      timeout: Duration.seconds(30)
+      timeout: Duration.seconds(90),
+      memorySize: 2048
     });
 
     bucket.grantReadWrite(handler);
