@@ -2,7 +2,7 @@
 This is the lambda that compiles sketches using the Arduino CLI. It's in the form of a docker container.
 
 ## Building locally
-`docker build -t compile .`
+`docker build -t compile . --progress=plain`
 
 ## Testing locally
 Run the container like so:

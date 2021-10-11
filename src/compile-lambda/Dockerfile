@@ -32,6 +32,10 @@ RUN $PWD/bin/arduino-cli lib install "Leaphy Original Extension" --config-file /
 RUN $PWD/bin/arduino-cli lib install "Leaphy Extra Extension" --config-file /var/task/arduino-cli.yaml
 RUN $PWD/bin/arduino-cli lib install "Servo" --config-file /var/task/arduino-cli.yaml
 
+# Set read permissions for the files we will copy
+RUN chmod -R 755 /var/task/Arduino
+RUN chmod -R 755 /var/task/sketch
+
 # Copy lambda handler source
 COPY package.json package-lock.json /var/task/
 

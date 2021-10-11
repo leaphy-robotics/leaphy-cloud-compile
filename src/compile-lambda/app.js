@@ -15,11 +15,21 @@ execSync("$PWD/bin/arduino-cli config set directories.data /tmp/Arduino --config
 execSync("$PWD/bin/arduino-cli config set directories.downloads /tmp/Arduino/staging --config-file /tmp/arduino-cli.yaml");
 execSync("$PWD/bin/arduino-cli config set directories.user /tmp/sketch --config-file /tmp/arduino-cli.yaml");
 
+console.log("Finished creating config");
+
 // Copies the preinstalled cores and libraries to where the Arduino CLI can use them
+console.log("Starting copy of files");
 fse.copySync('/var/task/Arduino', '/tmp/Arduino');
+
+console.log("Finished copying /var/task/Arduino");
+
 fse.copySync('/var/task/sketch', '/tmp/sketch');
 
+console.log("Finished copying /var/task/sketch");
+console.log("Finished copy of files");
+
 exports.handler = async function (event, context) {
+    console.log("Starting event handler");
     console.log(event);
     const sketch = JSON.parse(event.body).sketch;
     if (!sketch) {
@@ -35,9 +45,8 @@ exports.handler = async function (event, context) {
     const outPath = `${basePath}/out`;
     const hexPath = `${outPath}/sketch.ino.hex`;
 
-    //await fsPromises.mkdir(basePath, { recursive: true });
     await fsPromises.writeFile(sketchPath, sketch);
-
+    console.log("Finished writing sketch to /tmp");
     try {
         const { stdout, stderr } = await exec(`$PWD/bin/arduino-cli compile -b arduino:avr:uno --output-dir ${outPath} --config-file /tmp/arduino-cli.yaml ${basePath}`);
         console.log('stdout:', stdout);
@@ -46,6 +55,8 @@ exports.handler = async function (event, context) {
     catch (err) {
         console.error(`Something went wrong during compilation: ${err}`);
     }
+
+    console.log("Finished compiling sketch");
 
     const file = await fsPromises.readFile(hexPath);
     const bucket = 'leaphycloudcompilestack-leaphycloudcompileworkbuc-ilrdazq41crs';
@@ -65,6 +76,8 @@ exports.handler = async function (event, context) {
     } catch (err){
         console.log(err);
     }
+
+    console.log("Finished uploading hex to S3");
 
     const response = {
         'statusCode': 200,
