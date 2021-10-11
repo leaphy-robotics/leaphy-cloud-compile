@@ -17,16 +17,6 @@ execSync("$PWD/bin/arduino-cli config set directories.user /tmp/sketch --config-
 
 console.log("Finished creating config");
 
-// Copies the preinstalled cores and libraries to where the Arduino CLI can use them
-console.log("Starting copy of files");
-fse.copySync('/var/task/Arduino', '/tmp/Arduino');
-
-console.log("Finished copying /var/task/Arduino");
-
-fse.copySync('/var/task/sketch', '/tmp/sketch');
-
-console.log("Finished copying /var/task/sketch");
-console.log("Finished copy of files");
 
 exports.handler = async function (event, context) {
     console.log("Starting event handler");
@@ -44,6 +34,19 @@ exports.handler = async function (event, context) {
     const sketchPath = `${basePath}/sketch.ino`;
     const outPath = `${basePath}/out`;
     const hexPath = `${outPath}/sketch.ino.hex`;
+
+    if (!fs.existsSync(basePath)) {
+        // Copies the preinstalled cores and libraries to where the Arduino CLI can use them
+        console.log("Starting copy of files");
+        fse.copySync('/var/task/Arduino', '/tmp/Arduino');
+
+        console.log("Finished copying /var/task/Arduino");
+
+        fse.copySync('/var/task/sketch', '/tmp/sketch');
+
+        console.log("Finished copying /var/task/sketch");
+        console.log("Finished copy of files");
+    }
 
     await fsPromises.writeFile(sketchPath, sketch);
     console.log("Finished writing sketch to /tmp");
@@ -71,9 +74,9 @@ exports.handler = async function (event, context) {
     }
     const command = new PutObjectCommand(params);
 
-    try{
+    try {
         await client.send(command);
-    } catch (err){
+    } catch (err) {
         console.log(err);
     }
 

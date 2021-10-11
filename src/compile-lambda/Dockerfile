@@ -14,7 +14,7 @@ RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/inst
 # Create arduino cli config
 RUN $PWD/bin/arduino-cli config init --dest-dir /var/task --overwrite
 RUN $PWD/bin/arduino-cli config set directories.data /var/task/Arduino --config-file /var/task/arduino-cli.yaml
-RUN $PWD/bin/arduino-cli config set directories.downloads /var/task/Arduino/staging --config-file /var/task/arduino-cli.yaml
+RUN $PWD/bin/arduino-cli config set directories.downloads /var/task/ArduinoStaging --config-file /var/task/arduino-cli.yaml
 RUN $PWD/bin/arduino-cli config set directories.user /var/task/sketch --config-file /var/task/arduino-cli.yaml
 # Add additional urls to board manager, not needed for now
 #RUN $PWD/bin/arduino-cli config add board_manager.additional_urls http://arduino.esp8266.com/stable/package_esp8266com_index.json --config-file /tmp/arduino-cli.yaml
