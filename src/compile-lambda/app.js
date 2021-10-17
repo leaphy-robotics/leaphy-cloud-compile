@@ -38,13 +38,12 @@ exports.handler = async function (event, context) {
     if (!fs.existsSync(basePath)) {
         // Copies the preinstalled cores and libraries to where the Arduino CLI can use them
         console.log("Starting copy of files");
-        fse.copySync('/var/task/Arduino', '/tmp/Arduino');
 
-        console.log("Finished copying /var/task/Arduino");
+        const copyCores = fse.copy('/var/task/Arduino', '/tmp/Arduino');
+        const copyLibs = fse.copy('/var/task/sketch', '/tmp/sketch');
 
-        fse.copySync('/var/task/sketch', '/tmp/sketch');
+        await Promise.all([copyCores, copyLibs]);
 
-        console.log("Finished copying /var/task/sketch");
         console.log("Finished copy of files");
     }
 

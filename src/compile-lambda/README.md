@@ -8,10 +8,10 @@ This is the lambda that compiles sketches using the Arduino CLI. It's in the for
 Run the container like so:
 `docker run -e "AWS_ACCESS_KEY_ID=XXX" -e "AWS_SECRET_ACCESS_KEY=YYY" -p 9000:8080  --name compiler compile:latest`
 
-Then push an event:
-`curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"sketch": "void setup() { } void loop() { }"}'`
+This runs the docker using the [AWS Lambda Runtime Interface Emulator (RIE)](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html)
+so that it can be tested as a proper lambda. 
 
-This uses the [AWS Lambda Runtime Interface Emulator (RIE)](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html)
+Use the files in the `api-test` folder to call the lambda.
 
 ## Stopping the process
 The process can't be stopped using CTRL-C. You have to do:
