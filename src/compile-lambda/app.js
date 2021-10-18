@@ -15,12 +15,8 @@ execSync("$PWD/bin/arduino-cli config set directories.data /tmp/Arduino --config
 execSync("$PWD/bin/arduino-cli config set directories.downloads /tmp/Arduino/staging --config-file /tmp/arduino-cli.yaml");
 execSync("$PWD/bin/arduino-cli config set directories.user /tmp/sketch --config-file /tmp/arduino-cli.yaml");
 
-console.log("Finished creating config");
-
-
 exports.handler = async function (event, context) {
-    console.log("Starting event handler");
-    console.log(event);
+
     const sketch = JSON.parse(event.body).sketch;
     if (!sketch) {
         console.log('No Sketch in body!');
@@ -39,16 +35,29 @@ exports.handler = async function (event, context) {
         // Copies the preinstalled cores and libraries to where the Arduino CLI can use them
         console.log("Starting copy of files");
 
-        const copyCores = fse.copy('/var/task/Arduino', '/tmp/Arduino');
+        const copyCores = fse.copy('/var/task/Arduino', '/tmp/Arduino', {
+            filter: (src, dst) => {
+                if(src === '/var/task/Arduino/packages'){
+                    return false; // Don't copy the biggest dir, symlink instead
+                }
+                return true;
+            } 
+        });
         const copyLibs = fse.copy('/var/task/sketch', '/tmp/sketch');
-
         await Promise.all([copyCores, copyLibs]);
+
+        fs.symlink('/var/task/Arduino/packages', '/tmp/Arduino/packages', (err) => {
+            if(err){
+                console.log(err);
+                throw err;
+            }
+        });
 
         console.log("Finished copy of files");
     }
 
     await fsPromises.writeFile(sketchPath, sketch);
-    console.log("Finished writing sketch to /tmp");
+
     try {
         const { stdout, stderr } = await exec(`$PWD/bin/arduino-cli compile -b arduino:avr:uno --output-dir ${outPath} --config-file /tmp/arduino-cli.yaml ${basePath}`);
         console.log('stdout:', stdout);
@@ -58,7 +67,6 @@ exports.handler = async function (event, context) {
         console.error(`Something went wrong during compilation: ${err}`);
     }
 
-    console.log("Finished compiling sketch");
 
     const file = await fsPromises.readFile(hexPath);
     const bucket = 'leaphycloudcompilestack-leaphycloudcompileworkbuc-ilrdazq41crs';
@@ -78,8 +86,6 @@ exports.handler = async function (event, context) {
     } catch (err) {
         console.log(err);
     }
-
-    console.log("Finished uploading hex to S3");
 
     const response = {
         'statusCode': 200,
