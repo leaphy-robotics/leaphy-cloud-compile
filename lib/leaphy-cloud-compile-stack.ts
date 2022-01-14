@@ -1,17 +1,13 @@
 import * as path from 'path';
-import * as cdk from '@aws-cdk/core';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as lambda from '@aws-cdk/aws-lambda';
+import { Construct } from 'constructs';
+import { Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { aws_s3 as s3 } from 'aws-cdk-lib'; 
+import {aws_lambda as lambda} from 'aws-cdk-lib'; 
+import { HttpApi, CorsHttpMethod, HttpMethod } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha'
 
-import {CorsHttpMethod, HttpApi, HttpMethod} from '@aws-cdk/aws-apigatewayv2';
-import {LambdaProxyIntegration} from '@aws-cdk/aws-apigatewayv2-integrations';
-
-import { DockerImageCode } from '@aws-cdk/aws-lambda';
-import { Duration } from '@aws-cdk/core';
-
-
-export class LeaphyCloudCompileStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+export class LeaphyCloudCompileStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const bucket = new s3.Bucket(this, 'LeaphyCloudCompileWorkBucket', {
@@ -26,10 +22,10 @@ export class LeaphyCloudCompileStack extends cdk.Stack {
     });
 
     const handler = new lambda.DockerImageFunction(this, 'CompileFunction', {
-      code: DockerImageCode.fromImageAsset(path.join(__dirname, '..', 'src', 'compile-lambda')),
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '..', 'src', 'compile-lambda')),
       timeout: Duration.seconds(90),
       memorySize: 4096
-    });
+    });    
 
     bucket.grantReadWrite(handler);
     bucket.grantPut(handler);
@@ -60,9 +56,7 @@ export class LeaphyCloudCompileStack extends cdk.Stack {
     api.addRoutes({
       path: '/',
       methods: [HttpMethod.POST],
-      integration: new LambdaProxyIntegration({
-        handler: handler
-      })
+      integration: new HttpLambdaIntegration ("compileIntegration", handler)
     })
   }
 }
