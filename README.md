@@ -1,6 +1,14 @@
 # leaphy-cloud-compile
 Resources for running sketch compilation workloads in the cloud
 
+## Prerequisites
+
+To use this project you need the following:
+
+- [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured
+- [AWS CDK Toolkit](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) installed globally: `npm install -g aws-cdk`
+- The AWS account you are targetting should be [bootstrapped](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html)
+
 ## CDK
 This project uses CDK for defining AWS resources. 
 
