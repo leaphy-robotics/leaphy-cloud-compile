@@ -31,6 +31,19 @@ export class LeaphyCloudCompileStack extends Stack {
     bucket.grantPut(handler);
     bucket.grantPutAcl(handler);
     
+    const alias = new lambda.Alias(this, 'Alias', {
+      aliasName: 'prod',
+      version: handler.latestVersion,
+    });
+    
+    // Create AutoScaling target
+    const as = alias.addAutoScaling({ maxCapacity: 50 });
+    
+    // Configure Target Tracking
+    as.scaleOnUtilization({
+      utilizationTarget: 0.5,
+    });
+
     const api = new HttpApi(this, "compile-api", {
       apiName: "compile-service",
       description: "This service compiles sketches.",
